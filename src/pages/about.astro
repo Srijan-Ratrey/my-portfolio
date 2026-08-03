@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+import { GITHUB_URL } from '../consts';
+---
+
+<Layout
+	title="About"
+	description="ML and backend engineering — content safety, retrieval, and evaluation."
+	pubDate={new Date('August 03 2026')}
+>
+	<p>
+		I'm Srijan Ratrey, an engineer in Bengaluru working on machine learning systems — mostly content
+		safety, retrieval, and the evaluation infrastructure around them.
+	</p>
+
+	<p>
+		The thread running through my projects is measurement. It is easy to build something that
+		produces plausible output and much harder to know whether it is right. A multi-label classifier
+		that predicts no labels at all scores 89.83% exact-match accuracy on the Jigsaw toxic comment
+		data, at a macro-F1 of exactly zero. A RAG system will happily cite the wrong PDF with total
+		confidence. So a lot of the work I find worth doing is picking a metric that can actually be
+		wrong, calibrating the operating point instead of defaulting to 0.5, and writing down precisely
+		where the thing breaks.
+	</p>
+
+	<p>
+		That last part matters to me. The classifier I trained fails silently on Hinglish — it scores a
+		Hindi death threat at 0.000 and fires no labels at all. That is worse than degrading, and it
+		belongs in the README rather than in a footnote, so it is in the README.
+	</p>
+
+	<h2>What I work with</h2>
+
+	<p>
+		Python, PyTorch and the Hugging Face stack for modelling; FastAPI and Django for services;
+		Postgres, BigQuery, Celery and Redis around them. Day to day I work on content safety pipelines
+		— NSFW and moderation scoring, LLM-judge evaluation harnesses, model training and promotion.
+	</p>
+
+	<h2>Elsewhere</h2>
+
+	<p>
+		Code is on <a href={GITHUB_URL} target="_blank" rel="noopener">GitHub</a>, models on
+		<a href="https://huggingface.co/srijanratrey" target="_blank" rel="noopener">Hugging Face</a>.
+		The <a href="/projects">projects page</a> has the annotated version of both.
+	</p>
+</Layout>

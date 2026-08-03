@@ -1,0 +1,177 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+type Link = { label: string; href: string };
+type Project = {
+	title: string;
+	blurb: string;
+	detail: string;
+	stack: string[];
+	links: Link[];
+};
+
+const projects: Project[] = [
+	{
+		title: 'Multi-label content classification',
+		blurb:
+			'A DistilBERT fine-tune that predicts every applicable policy label on a comment — toxic, severe_toxic, obscene, threat, insult, identity_hate — not just the most likely one.',
+		detail:
+			'Built around one claim: accuracy is the wrong metric. A model that predicts nothing at all scores 89.83% exact-match accuracy on this data at a macro-F1 of exactly 0.0. So the work is choosing the metric, calibrating a threshold per label on validation, and doing real error analysis. Macro-F1 0.6626 at 0.5, 0.6836 with tuned thresholds, against 0.5412 for a TF-IDF one-vs-rest baseline. Documented failure mode: it is English-only and fails silently on Hinglish.',
+		stack: ['PyTorch', 'Transformers', 'DistilBERT', 'scikit-learn', 'Streamlit'],
+		links: [
+			{ label: 'Write-up', href: '/blog/multi-label-content-classification/' },
+			{
+				label: 'Repo',
+				href: 'https://github.com/Srijan-Ratrey/Multilabel-content-classification',
+			},
+			// Live demo omitted: the Streamlit app currently redirects to a login page rather than
+			// serving publicly. Re-add once it's shareable:
+			// { label: 'Live demo', href: 'https://multilabel-content-classification.streamlit.app/' },
+			{ label: 'Model', href: 'https://huggingface.co/srijanratrey/distilbert-jigsaw-multilabel' },
+		],
+	},
+	{
+		title: 'JobHunter',
+		blurb:
+			'Finds job postings on public ATS boards, resolves a hiring contact where one is published, scores each opening against your profile, and exports a ranked sheet.',
+		detail:
+			'A research assistant that surfaces openings and one right person to email — deliberately not a lead-generation scraper. The rate limiting, robots.txt checks and draft-only outreach are load-bearing design constraints rather than style preferences, and they are documented as such.',
+		stack: ['Python', 'ATS APIs', 'CLI'],
+		links: [{ label: 'Repo', href: 'https://github.com/Srijan-Ratrey/get-me-jobs' }],
+	},
+	{
+		title: 'RAG Q&A over industrial safety documents',
+		blurb:
+			'A question-answering service over industrial and machine safety PDFs, with citations back to the source document.',
+		detail:
+			'A cosine-similarity baseline over sentence embeddings, then a hybrid reranker combining vector similarity with BM25 keyword matching to measure what the enhancement actually buys. 20 safety PDFs, exposed behind a REST endpoint.',
+		stack: ['Python', 'Sentence Transformers', 'BM25', 'REST API'],
+		links: [{ label: 'Repo', href: 'https://github.com/Srijan-Ratrey/RAG-Q-A-System' }],
+	},
+	{
+		title: 'Schema-Aware NL2SQL',
+		blurb:
+			'Converts natural language questions into SQL across database schemas it has not seen before.',
+		detail:
+			'Fine-tuned T5 with QLoRA, conditioned on the target schema so it generalises across dynamic databases rather than memorising one. Ships both a web interface and a REST API.',
+		stack: ['Python', 'T5', 'QLoRA', 'FastAPI'],
+		links: [
+			{
+				label: 'Repo',
+				href: 'https://github.com/Srijan-Ratrey/Schema-Aware-Natural-Language-to-SQL-Agent',
+			},
+		],
+	},
+];
+
+const isExternal = (href: string) => href.startsWith('http');
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Projects | ${SITE_TITLE}`}
+			description="Machine learning and backend projects — content safety classification, retrieval, and natural language to SQL."
+		/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Projects</h1>
+			<p class="lede">
+				Things I've built, with the results and the limitations included. Every repo below is public.
+			</p>
+
+			<ul class="projects">
+				{
+					projects.map((project) => (
+						<li class="project">
+							<h2>{project.title}</h2>
+							<p class="blurb">{project.blurb}</p>
+							<p class="detail">{project.detail}</p>
+							<ul class="stack">
+								{project.stack.map((tech) => (
+									<li>{tech}</li>
+								))}
+							</ul>
+							<p class="links">
+								{project.links.map((link) => (
+									<a
+										href={link.href}
+										target={isExternal(link.href) ? '_blank' : undefined}
+										rel={isExternal(link.href) ? 'noopener' : undefined}
+									>
+										{link.label}
+										{isExternal(link.href) ? ' ↗' : ' →'}
+									</a>
+								))}
+							</p>
+						</li>
+					))
+				}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.lede {
+		color: rgb(var(--gray));
+		margin-bottom: 2.5em;
+	}
+	ul.projects {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.project {
+		padding: 0 0 2em 0;
+		margin-bottom: 2em;
+		border-bottom: 1px solid rgb(var(--gray-light));
+	}
+	ul.projects > li:last-child {
+		border-bottom: none;
+	}
+	.project h2 {
+		margin: 0 0 0.4em 0;
+		font-size: 1.4em;
+	}
+	.blurb {
+		margin: 0 0 0.7em 0;
+		color: rgb(var(--black));
+	}
+	.detail {
+		margin: 0 0 1em 0;
+		font-size: 0.9em;
+		color: rgb(var(--gray));
+	}
+	ul.stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4em;
+		list-style: none;
+		margin: 0 0 1em 0;
+		padding: 0;
+	}
+	ul.stack li {
+		padding: 0.15em 0.6em;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 999px;
+		background: rgba(var(--gray-light), 35%);
+		color: rgb(var(--gray-dark));
+		font-size: 0.7em;
+		white-space: nowrap;
+	}
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.2em;
+		margin: 0;
+		font-size: 0.85em;
+	}
+</style>

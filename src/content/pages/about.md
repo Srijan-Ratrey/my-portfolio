@@ -1,29 +1,23 @@
 ---
-heading: 'About'
-description: >-
-  ML and backend engineer in Bengaluru — content safety, retrieval, and evaluation.
-  Experience, education, and skills.
-lede: >-
-  I'm Srijan Ratrey, an engineer in Bengaluru working on machine learning systems — mostly
-  content safety, retrieval, and the evaluation infrastructure around them.
+heading: About
+lede: I'm Srijan Ratrey, an engineer in Bengaluru working on machine learning systems — mostly content safety, retrieval, and the evaluation infrastructure around them.
+description: ML and backend engineer in Bengaluru — content safety, retrieval, and evaluation. Experience, education, and skills.
 education:
-  degree: 'B.Tech, Data Science and Artificial Intelligence'
-  school: 'IIIT Naya Raipur'
-  period: '2021 — 2025'
+  degree: B.Tech, Data Science and Artificial Intelligence
+  school: IIIT Naya Raipur
+  period: 2021 — 2025
 skills:
-  - group: 'Languages'
-    items: 'Python, SQL'
-  - group: 'ML & DL'
-    items: 'PyTorch, TensorFlow, Keras, XGBoost, CNNs, GANs, YOLO, ResNet, OpenCV'
-  - group: 'LLMs & NLP'
-    items: >-
-      Transformers, LangChain, fine-tuning, LoRA, prompt engineering, GPT-4, Gemini, Claude, T5
-  - group: 'Infra & MLOps'
-    items: >-
-      Docker, Flask, FAISS, Langfuse, A/B testing, MongoDB, GCP, BigQuery, Vertex AI, Amazon S3
+  - group: Languages
+    items: Python, SQL
+  - group: ML & DL
+    items: PyTorch, TensorFlow, Keras, XGBoost, CNNs, GANs, YOLO, ResNet, OpenCV
+  - group: LLMs & NLP
+    items: Transformers, LangChain, fine-tuning, LoRA, prompt engineering, GPT-4, Gemini, Claude, T5
+  - group: Infra & MLOps
+    items: Django, Docker, Flask, FAISS, Langfuse, A/B testing, MongoDB, GCP, BigQuery, Vertex AI, Amazon S3
 certificates:
-  - 'Deep Learning for NLP — NPTEL, 2025'
-  - 'Google Cloud Computing Foundations — NPTEL, 2024'
+  - Deep Learning for NLP — NPTEL, 2025
+  - Google Cloud Computing Foundations — NPTEL, 2024
 ---
 
 The thread running through my work is measurement. It is easy to build something that produces

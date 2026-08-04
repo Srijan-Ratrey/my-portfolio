@@ -1,0 +1,234 @@
+# Sveltia CMS configuration.
+#
+# The fields here must stay in step with the zod schemas in src/content.config.ts —
+# those two files describe the same data twice, which is inherent to a git-based CMS.
+# If you add a field, add it in both places or the build will reject what you save.
+#
+# Saving commits straight to `main`, so an edit is live in about a minute. If a save
+# is invalid the Cloudflare build fails and the previous version keeps serving.
+# To review before publishing instead, uncomment publish_mode below.
+
+backend:
+  name: github
+  repo: Srijan-Ratrey/my-portfolio
+  branch: main
+  # The sveltia-cms-auth Worker. Its default wrangler name is `sveltia-cms-auth`,
+  # which on this account resolves to the host below. If you deploy it under a
+  # different name, change this to match or login will fail silently.
+  # Setup steps are in README.md under "Editing content".
+  base_url: https://sveltia-cms-auth.sr5.workers.dev
+
+# publish_mode: editorial_workflow   # saves open pull requests instead of publishing
+
+site_url: https://srijan-ratrey.sr5.workers.dev
+display_url: https://srijan-ratrey.sr5.workers.dev
+
+# Uploads land here. `public_folder` is the path written into content, so an upload
+# becomes /uploads/thing.png — which is what the heroImage schema expects.
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  # ---------------------------------------------------------------- projects
+  - name: projects
+    label: Projects
+    label_singular: Project
+    folder: src/content/projects
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    summary: '{{order}} — {{title}}'
+    sortable_fields: [order, title]
+    description: >-
+      Cards on the /projects page. Lower `order` appears first. Deleting an entry
+      removes the card.
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: order
+        label: Order
+        widget: number
+        value_type: int
+        min: 1
+        hint: Lower numbers appear first on the page.
+      - name: blurb
+        label: Blurb
+        widget: text
+        hint: One or two sentences, shown in full brightness under the title.
+      - name: detail
+        label: Detail
+        widget: text
+        hint: The dimmer paragraph below the blurb. Results and limitations go here.
+      - name: stack
+        label: Stack
+        widget: list
+        field: { name: item, label: Technology, widget: string }
+        hint: Rendered as the square tags.
+      - name: links
+        label: Links
+        widget: list
+        fields:
+          - { name: label, label: Label, widget: string }
+          - name: href
+            label: URL
+            widget: string
+            hint: A full https:// URL gets an ↗ arrow; a path like /blog/… gets a → arrow.
+
+  # -------------------------------------------------------------- experience
+  - name: experience
+    label: Experience
+    label_singular: Role
+    folder: src/content/experience
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    summary: '{{order}} — {{title}}, {{org}}'
+    sortable_fields: [order, org]
+    description: Roles in the Experience section of /about. Lower `order` appears first.
+    fields:
+      - { name: title, label: Job title, widget: string }
+      - { name: org, label: Organisation, widget: string }
+      - { name: location, label: Location, widget: string }
+      - name: period
+        label: Period
+        widget: string
+        hint: 'Display text, not a real date range. E.g. Dec 2025 — Jun 2026'
+      - name: order
+        label: Order
+        widget: number
+        value_type: int
+        min: 1
+      - name: bullets
+        label: Bullets
+        widget: list
+        field: { name: bullet, label: Bullet, widget: text }
+
+  # -------------------------------------------------------------------- blog
+  - name: blog
+    label: Blog
+    label_singular: Post
+    folder: src/content/blog
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    sortable_fields: [pubDate, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - name: description
+        label: Description
+        widget: text
+        hint: Used for the meta description and the RSS feed.
+      - name: pubDate
+        label: Published
+        widget: datetime
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+      - name: updatedDate
+        label: Updated
+        widget: datetime
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+        required: false
+      - name: heroImage
+        label: Social preview image
+        widget: image
+        required: false
+        hint: >-
+          Not shown in the post body — used only as the link-preview image when the
+          post is shared.
+      - { name: body, label: Body, widget: markdown }
+
+  # ------------------------------------------------------------------- pages
+  - name: pages
+    label: Pages
+    files:
+      - name: home
+        label: Home page
+        file: src/content/pages/home.md
+        format: yaml-frontmatter
+        fields:
+          - { name: heading, label: Heading, widget: string }
+          - name: lede
+            label: Lede
+            widget: text
+            hint: The larger, lighter paragraph directly under the heading.
+          - name: metrics
+            label: Metric row
+            widget: list
+            hint: >-
+              Only real, verifiable figures. Tick "accent" on at most one — it is the
+              single highlighted number on the page.
+            fields:
+              - { name: label, label: Label, widget: string }
+              - { name: value, label: Value, widget: string }
+              - { name: accent, label: Highlight in orange, widget: boolean, required: false }
+          - { name: ctaLabel, label: Call-to-action text, widget: string, required: false }
+          - { name: ctaHref, label: Call-to-action link, widget: string, required: false }
+          - { name: writingHeading, label: Writing section heading, widget: string, required: false }
+          - { name: allPostsLabel, label: 'All-posts link text', widget: string, required: false }
+          - name: body
+            label: Paragraph below the metrics
+            widget: markdown
+      - name: about
+        label: About page
+        file: src/content/pages/about.md
+        format: yaml-frontmatter
+        fields:
+          - { name: heading, label: Heading, widget: string }
+          - { name: lede, label: Lede, widget: text }
+          - name: description
+            label: Meta description
+            widget: text
+            required: false
+            hint: Search-result and link-preview text for this page.
+          - name: education
+            label: Education
+            widget: object
+            required: false
+            fields:
+              - { name: degree, label: Degree, widget: string }
+              - { name: school, label: Institution, widget: string }
+              - { name: period, label: Period, widget: string }
+          - name: skills
+            label: Skills
+            widget: list
+            required: false
+            fields:
+              - { name: group, label: Group, widget: string }
+              - { name: items, label: Items, widget: text, hint: Comma-separated. }
+          - name: certificates
+            label: Certificates
+            widget: list
+            required: false
+            field: { name: item, label: Certificate, widget: string }
+          - name: body
+            label: Narrative
+            widget: markdown
+
+  # ---------------------------------------------------------------- settings
+  - name: settings
+    label: Settings
+    files:
+      - name: site
+        label: Site and contact
+        file: src/content/settings/site.md
+        format: yaml-frontmatter
+        description: >-
+          Site title, description and the links in the header, footer and About page.
+          Deliberately no phone number — this is a public, search-indexed site.
+        fields:
+          - { name: title, label: Site title, widget: string }
+          - name: description
+            label: Site description
+            widget: text
+            hint: Used for the home page meta description and the RSS feed.
+          - { name: github, label: GitHub URL, widget: string }
+          - { name: linkedin, label: LinkedIn URL, widget: string }
+          - { name: email, label: Public email, widget: string }

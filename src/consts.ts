@@ -4,4 +4,9 @@
 export const SITE_TITLE = 'Srijan Ratrey';
 export const SITE_DESCRIPTION =
 	'ML and backend engineering — content safety, retrieval, and evaluation. Projects, write-ups, and results.';
+
 export const GITHUB_URL = 'https://github.com/Srijan-Ratrey';
+export const LINKEDIN_URL = 'https://www.linkedin.com/in/srijan-ratrey-6b18a6179';
+export const EMAIL = 'srijanratrey512@gmail.com';
+// Phone number from the resume is deliberately not here. An indexed public page
+// is the wrong place for it.

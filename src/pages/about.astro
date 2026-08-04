@@ -1,47 +1,317 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
-import { GITHUB_URL } from '../consts';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { EMAIL, GITHUB_URL, LINKEDIN_URL, SITE_TITLE } from '../consts';
+
+type Role = {
+	title: string;
+	org: string;
+	location: string;
+	period: string;
+	bullets: string[];
+};
+
+const roles: Role[] = [
+	{
+		title: 'AI/ML Intern',
+		org: 'Kavana',
+		location: 'Bengaluru, India',
+		period: 'Dec 2025 — Jun 2026',
+		bullets: [
+			'Raised NSFW catch rate from 66% to 77% by re-architecting the safety classifier across three generations — rebuilt V2 from scratch as a FAISS-based 3-label classifier (clean/borderline/explicit), then drove V3, a neural-net scorer, via misclassification analysis, data curation, and auto-training and auto-deployment to production.',
+			'Built an LLM-as-judge eval pipeline scoring conversations across 5 risk tags (NSFW, abuse, flirting, emotional support, PII) — reached 87% NSFW precision and ~6% engagement lift; benchmarked multiple LLMs and tuned batching to score 1,000 conversations in under 15 minutes via a daily cron.',
+			'Shipped context-aware speech-to-text at under 1.5s end-to-end by benchmarking 6 vendors (Sarvam, Gemini, OpenAI, ElevenLabs, Cartesia, Smallest AI) on a 100-sample set against a WER and latency trade-off.',
+			'Shipped real-time, context-aware image generation in-chat — bots generate and persist visuals that maintain narrative continuity across sessions.',
+		],
+	},
+	{
+		title: 'AI/ML Intern',
+		org: 'Seekho',
+		location: 'Bengaluru, India',
+		period: 'May 2024 — Jul 2024',
+		bullets: [
+			'Developed a hybrid autoplay recommendation engine combining collaborative filtering on user watch history with content-based filtering on video embeddings, contributing to a 6% lift in video completion rates.',
+			'Performed extensive data wrangling and analysis on user-event logs, directly contributing to a 4% reduction in bounce rate.',
+			'Executed end-to-end A/B experimentation on autoplay variants, resulting in an 8% increase in session duration.',
+			'Benchmarked multiple approaches — matrix factorization, similarity scoring, embedding optimization — and selected the top performer on offline evaluation metrics.',
+		],
+	},
+];
+
+const skills: { group: string; items: string }[] = [
+	{ group: 'Languages', items: 'Python, SQL' },
+	{ group: 'ML & DL', items: 'PyTorch, TensorFlow, Keras, XGBoost, CNNs, GANs, YOLO, ResNet, OpenCV' },
+	{
+		group: 'LLMs & NLP',
+		items: 'Transformers, LangChain, fine-tuning, LoRA, prompt engineering, GPT-4, Gemini, Claude, T5',
+	},
+	{
+		group: 'Infra & MLOps',
+		items: 'Docker, Flask, FAISS, Langfuse, A/B testing, MongoDB, GCP, BigQuery, Vertex AI, Amazon S3',
+	},
+];
+
+const certificates = [
+	'Deep Learning for NLP — NPTEL, 2025',
+	'Google Cloud Computing Foundations — NPTEL, 2024',
+];
 ---
 
-<Layout
-	title="About"
-	description="ML and backend engineering — content safety, retrieval, and evaluation."
-	pubDate={new Date('August 03 2026')}
->
-	<p>
-		I'm Srijan Ratrey, an engineer in Bengaluru working on machine learning systems — mostly content
-		safety, retrieval, and the evaluation infrastructure around them.
-	</p>
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`About | ${SITE_TITLE}`}
+			description="ML and backend engineer in Bengaluru — content safety, retrieval, and evaluation. Experience, education, and skills."
+		/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="measure">
+				<h1>About</h1>
+				<p class="lede">
+					I'm Srijan Ratrey, an engineer in Bengaluru working on machine learning systems — mostly
+					content safety, retrieval, and the evaluation infrastructure around them.
+				</p>
+				<p>
+					The thread running through my work is measurement. It is easy to build something that
+					produces plausible output and much harder to know whether it is right. A multi-label
+					classifier that predicts no labels at all scores 89.83% exact-match accuracy on the Jigsaw
+					toxic comment data, at a macro-F1 of exactly zero. A RAG system will happily cite the wrong
+					PDF with total confidence. So a lot of the work I find worth doing is picking a metric that
+					can actually be wrong, calibrating the operating point instead of defaulting to 0.5, and
+					writing down precisely where the thing breaks.
+				</p>
+				<p>
+					That last part matters to me. The classifier I trained fails silently on Hinglish — it
+					scores a Hindi death threat at 0.000 and fires no labels at all. That is worse than
+					degrading, and it belongs in the README rather than in a footnote, so it is in the
+					<a href="/blog/multi-label-content-classification/">README</a>.
+				</p>
+			</div>
 
-	<p>
-		The thread running through my projects is measurement. It is easy to build something that
-		produces plausible output and much harder to know whether it is right. A multi-label classifier
-		that predicts no labels at all scores 89.83% exact-match accuracy on the Jigsaw toxic comment
-		data, at a macro-F1 of exactly zero. A RAG system will happily cite the wrong PDF with total
-		confidence. So a lot of the work I find worth doing is picking a metric that can actually be
-		wrong, calibrating the operating point instead of defaulting to 0.5, and writing down precisely
-		where the thing breaks.
-	</p>
+			<section class="block">
+				<h2 class="section-label">Experience</h2>
+				<ol class="roles">
+					{
+						roles.map((role) => (
+							<li class="role">
+								<div class="role-head">
+									<div>
+										<h3>{role.title}</h3>
+										<p class="org">
+											{role.org} · {role.location}
+										</p>
+									</div>
+									<span class="period">{role.period}</span>
+								</div>
+								<ul class="bullets">
+									{role.bullets.map((b) => (
+										<li>{b}</li>
+									))}
+								</ul>
+							</li>
+						))
+					}
+				</ol>
+			</section>
 
-	<p>
-		That last part matters to me. The classifier I trained fails silently on Hinglish — it scores a
-		Hindi death threat at 0.000 and fires no labels at all. That is worse than degrading, and it
-		belongs in the README rather than in a footnote, so it is in the README.
-	</p>
+			<section class="block">
+				<h2 class="section-label">Education</h2>
+				<div class="role-head">
+					<div>
+						<h3>B.Tech, Data Science and Artificial Intelligence</h3>
+						<p class="org">IIIT Naya Raipur</p>
+					</div>
+					<span class="period">2021 — 2025</span>
+				</div>
+			</section>
 
-	<h2>What I work with</h2>
+			<section class="block">
+				<h2 class="section-label">Skills</h2>
+				<dl class="skills">
+					{
+						skills.map((s) => (
+							<div class="skill-row">
+								<dt>{s.group}</dt>
+								<dd>{s.items}</dd>
+							</div>
+						))
+					}
+				</dl>
+			</section>
 
-	<p>
-		Python, PyTorch and the Hugging Face stack for modelling; FastAPI and Django for services;
-		Postgres, BigQuery, Celery and Redis around them. Day to day I work on content safety pipelines
-		— NSFW and moderation scoring, LLM-judge evaluation harnesses, model training and promotion.
-	</p>
+			<section class="block">
+				<h2 class="section-label">Certificates</h2>
+				<ul class="plain">
+					{certificates.map((c) => <li>{c}</li>)}
+				</ul>
+			</section>
 
-	<h2>Elsewhere</h2>
+			<section class="block">
+				<h2 class="section-label">Elsewhere</h2>
+				<ul class="plain links">
+					<li>
+						<a href={GITHUB_URL} target="_blank" rel="noopener">GitHub ↗</a>
+					</li>
+					<li>
+						<a href={LINKEDIN_URL} target="_blank" rel="noopener">LinkedIn ↗</a>
+					</li>
+					<li>
+						<a href="https://huggingface.co/srijanratrey" target="_blank" rel="noopener">
+							Hugging Face ↗
+						</a>
+					</li>
+					<li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
 
-	<p>
-		Code is on <a href={GITHUB_URL} target="_blank" rel="noopener">GitHub</a>, models on
-		<a href="https://huggingface.co/srijanratrey" target="_blank" rel="noopener">Hugging Face</a>.
-		The <a href="/projects">projects page</a> has the annotated version of both.
-	</p>
-</Layout>
+<style>
+	.lede {
+		font-size: 19px;
+		line-height: 1.55;
+		color: var(--text-secondary);
+		margin-top: 1.25rem;
+	}
+
+	/* Each block's rule runs the full container while its prose stops at --measure. */
+	.block {
+		margin-top: 3.5rem;
+	}
+	.section-label {
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		padding-bottom: 0.5rem;
+		margin-bottom: 0;
+		border-bottom: 2px solid var(--rule-strong);
+	}
+
+	.roles {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		counter-reset: role;
+	}
+	.role {
+		padding: 2rem 0;
+		border-bottom: 1px solid var(--rule);
+	}
+	.roles > li:last-child {
+		border-bottom: none;
+	}
+	.role-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.5rem 1.5rem;
+		padding: 1.5rem 0 0;
+	}
+	.role .role-head {
+		padding-top: 0;
+	}
+	.role-head h3 {
+		margin: 0;
+		font-size: 1.2rem;
+		font-weight: 500;
+		letter-spacing: -0.01em;
+	}
+	.org {
+		margin: 0.2rem 0 0;
+		font-size: 14px;
+		color: var(--text-secondary);
+	}
+	.period {
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		white-space: nowrap;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.bullets {
+		max-width: var(--measure);
+		margin: 1.25rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+	.bullets li {
+		position: relative;
+		padding-left: 1.1rem;
+		margin-bottom: 0.7rem;
+		font-size: 15px;
+		color: var(--text-secondary);
+	}
+	/* A rule, not a bullet glyph. */
+	.bullets li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.7em;
+		width: 0.6rem;
+		height: 1px;
+		background: var(--rule-strong);
+	}
+
+	.skills {
+		margin: 0;
+	}
+	.skill-row {
+		display: grid;
+		grid-template-columns: minmax(0, 10rem) minmax(0, 1fr);
+		gap: 0 1.5rem;
+		padding: 0.85rem 0;
+		border-bottom: 1px solid var(--rule);
+	}
+	.skill-row:last-child {
+		border-bottom: none;
+	}
+	.skills dt {
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		padding-top: 0.2rem;
+	}
+	.skills dd {
+		margin: 0;
+		font-size: 15px;
+		color: var(--text-secondary);
+	}
+	@media (max-width: 560px) {
+		.skill-row {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0.3rem;
+		}
+	}
+
+	ul.plain {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	ul.plain li {
+		padding: 0.85rem 0;
+		border-bottom: 1px solid var(--rule);
+		font-size: 15px;
+		color: var(--text-secondary);
+	}
+	ul.plain li:last-child {
+		border-bottom: none;
+	}
+	ul.links li {
+		font-size: 14px;
+	}
+</style>

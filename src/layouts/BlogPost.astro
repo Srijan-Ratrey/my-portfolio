@@ -1,82 +1,65 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+	/** Top-level sections, for the table of contents. Optional so /about can omit it. */
+	headings?: { depth: number; slug: string; text: string }[];
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, headings = [] } = Astro.props;
+
+// Only h2s — deeper levels would make the list longer than it is useful.
+const sections = headings.filter((h) => h.depth === 2);
 ---
 
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} image={heroImage} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
 	</head>
 
 	<body>
 		<Header />
 		<main>
 			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
+				<header class="title">
+					<h1>{title}</h1>
+					<p class="date">
+						<FormattedDate date={pubDate} />
+						{
+							updatedDate && (
+								<span class="updated">
+									· Updated <FormattedDate date={updatedDate} />
+								</span>
+							)
+						}
+					</p>
+				</header>
+
+				{
+					sections.length > 1 && (
+						<nav class="toc" aria-label="Table of contents">
+							<span class="toc-label">Contents</span>
+							<ol>
+								{sections.map((s) => (
+									<li>
+										<a href={`#${s.slug}`}>{s.text}</a>
+									</li>
+								))}
+							</ol>
+						</nav>
+					)
+				}
+
+				{/* heroImage is intentionally not rendered in the body. It is the same
+					PR-curve plot as Figure 1 a few paragraphs down, and showing it twice
+					within one screen reads as a mistake. It is still used for og:image
+					via BaseHead, which is where it earns its keep. */}
+
 				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
 					<slot />
 				</div>
 			</article>
@@ -84,3 +67,84 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<Footer />
 	</body>
 </html>
+
+<style>
+	/* Left-aligned, with the date under the title and a major rule closing the
+	   block — replacing the centred title and the <hr/> that used to follow it. */
+	.title {
+		max-width: var(--measure);
+		padding-bottom: 1.25rem;
+		border-bottom: 2px solid var(--rule-strong);
+		margin-bottom: 2rem;
+	}
+	.title h1 {
+		margin: 0 0 0.75rem 0;
+	}
+	.date {
+		margin: 0;
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+	}
+	.updated {
+		font-style: normal;
+	}
+
+	.toc {
+		max-width: var(--measure);
+		margin: 0 0 2.5rem 0;
+		padding-left: 0.75rem;
+		border-left: 2px solid var(--rule);
+	}
+	.toc-label {
+		display: block;
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		margin-bottom: 0.5rem;
+	}
+	.toc ol {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		counter-reset: toc;
+		font-size: 14px;
+	}
+	.toc li {
+		counter-increment: toc;
+		padding: 0.15rem 0;
+	}
+	.toc li::before {
+		content: counter(toc, decimal-leading-zero) '  ';
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--text-muted);
+	}
+	.toc a {
+		color: var(--text-secondary);
+		text-decoration: none;
+	}
+	.toc a:hover {
+		color: var(--accent);
+	}
+
+
+	.prose {
+		max-width: var(--measure);
+		color: var(--text-primary);
+	}
+	/* Section headings get their own minor rule, so the long post has visible
+	   structure while scrolling. */
+	.prose :global(h2) {
+		margin-top: 3rem;
+		padding-bottom: 0.4rem;
+		border-bottom: 1px solid var(--rule);
+	}
+	.prose :global(h3) {
+		margin-top: 2rem;
+	}
+</style>

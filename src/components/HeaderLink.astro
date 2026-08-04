@@ -17,8 +17,6 @@ const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 		display: inline-block;
 		text-decoration: none;
 	}
-	a.active {
-		font-weight: bolder;
-		text-decoration: underline;
-	}
+	/* The active state is the accent tab rule in Header.astro. Not weight, not an
+	   underline — only 400 and 500 exist here, and the rule does the signalling. */
 </style>

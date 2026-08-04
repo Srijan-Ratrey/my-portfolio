@@ -20,6 +20,9 @@ const { title, description, image } = Astro.props;
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- Dark only. Keeps form controls and scrollbars dark and stops a white flash
+	 on first paint. -->
+<meta name="color-scheme" content="dark" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />
 <link rel="sitemap" href="/sitemap-index.xml" />
@@ -31,7 +34,10 @@ const { title, description, image } = Astro.props;
 />
 <meta name="generator" content={Astro.generator} />
 
-<Font cssVariable="--font-atkinson" preload />
+<!-- Emits Inter's @font-face and defines --font-inter, which global.css consumes
+	 on `body`. Atkinson is still configured but no longer used, so it is not
+	 preloaded. -->
+<Font cssVariable="--font-inter" preload />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />

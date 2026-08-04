@@ -15,7 +15,7 @@ import HeaderLink from './HeaderLink.astro';
 		<div class="social-links">
 			<a href={GITHUB_URL} target="_blank" rel="me noopener">
 				<span class="sr-only">GitHub profile</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
+				<svg viewBox="0 0 16 16" aria-hidden="true" width="20" height="20"
 					><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg
 				>
 			</a>
@@ -25,41 +25,98 @@ import HeaderLink from './HeaderLink.astro';
 <style>
 	header {
 		margin: 0;
-		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
-	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
-	}
-
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
+		padding: 0 var(--gutter);
+		background: var(--surface-0);
+		/* A major division: the full-width rule under the header. No bar, no shadow. */
+		border-bottom: 2px solid var(--rule-strong);
 	}
 	nav {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: 1.5rem;
+		max-width: var(--page-max);
+		margin: 0 auto;
+	}
+	h2 {
+		margin: 0;
+		font-size: 13px;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	h2 a {
+		color: var(--text-primary);
+		text-decoration: none;
+	}
+	.internal-links {
+		display: flex;
+		gap: 1.5rem;
+		margin-left: auto;
 	}
 	nav a {
-		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
+		padding: 1.1rem 0;
+		font-size: 12px;
+		font-weight: 500;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		/* Was `var(--black)`, an RGB triplet used without rgb() — invalid, so the
+		   declaration was dropped and this inherited. It never worked. */
+		color: var(--text-muted);
 		text-decoration: none;
+		border-bottom: 2px solid transparent;
 	}
+	nav a:hover {
+		color: var(--text-primary);
+	}
+	/* Sits on the header's own rule so it reads as a tab, not a floating underline. */
 	nav a.active {
-		text-decoration: none;
+		color: var(--text-primary);
 		border-bottom-color: var(--accent);
+		margin-bottom: -2px;
 	}
 	.social-links,
 	.social-links a {
 		display: flex;
 	}
+	.social-links a {
+		color: var(--text-muted);
+		padding: 1.1rem 0;
+		border-bottom: 2px solid transparent;
+	}
+	.social-links a:hover {
+		color: var(--accent);
+	}
 	@media (max-width: 720px) {
-		.social-links {
-			display: none;
+		nav {
+			gap: 1rem;
+		}
+		.internal-links {
+			gap: 1rem;
+		}
+		nav a {
+			font-size: 11px;
+			letter-spacing: 0.06em;
+		}
+	}
+
+	/* Below ~560px the name + four nav items + icon exceed the viewport. Flex items
+	   won't shrink past min-content, so without this the whole document widens and
+	   every page scrolls sideways — body copy included, not just the header. Wrap
+	   the name onto its own row instead. */
+	@media (max-width: 560px) {
+		nav {
+			flex-wrap: wrap;
+		}
+		h2 {
+			width: 100%;
+			padding-top: 0.9rem;
+		}
+		.internal-links {
+			margin-left: 0;
+		}
+		nav a {
+			padding: 0.7rem 0;
 		}
 	}
 </style>

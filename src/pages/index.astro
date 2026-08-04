@@ -1,66 +1,60 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getSite } from '../lib/site';
+
+// All copy on this page comes from src/content/pages/home.md — the lede and metric
+// row from its frontmatter, the paragraph below the metrics from its body.
+const site = await getSite();
+const pages = await getCollection('pages');
+const home = pages.find((p) => p.id === 'home');
+if (!home) throw new Error('Missing src/content/pages/home.md');
+const { Content } = await render(home);
+const { heading, lede, metrics = [], ctaLabel, ctaHref, writingHeading, allPostsLabel } = home.data;
 
 const posts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
-
-// Every figure here is verifiable from the Jigsaw post. Nothing is invented —
-// the other three projects have no published numbers, so they get none.
-const metrics = [
-	{ label: 'Macro-F1', value: '0.684' },
-	{ label: 'Accuracy trap', value: '89.83%', isTrap: true },
-	{ label: 'N test', value: '23,936' },
-];
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={site.title} description={site.description} />
 	</head>
 	<body>
 		<Header />
 		<main>
 			<div class="measure">
-				<h1>Srijan Ratrey</h1>
-				<p class="intro">
-					I build and evaluate ML systems — content safety classifiers, retrieval pipelines, and
-					the measurement harnesses that tell you whether any of it actually works.
-				</p>
+				<h1>{heading}</h1>
+				<p class="intro">{lede}</p>
 			</div>
 
-			<div class="metrics">
-				{
-					metrics.map((m) => (
-						<div class="metric">
-							<span class="metric-label">{m.label}</span>
-							<span class:list={['metric-value', { 'is-trap': m.isTrap }]}>{m.value}</span>
-						</div>
-					))
-				}
-			</div>
+			{
+				metrics.length > 0 && (
+					<div class="metrics">
+						{metrics.map((m) => (
+							<div class="metric">
+								<span class="metric-label">{m.label}</span>
+								<span class:list={['metric-value', { 'is-trap': m.accent }]}>{m.value}</span>
+							</div>
+						))}
+					</div>
+				)
+			}
 
-			<div class="measure">
-				<p>
-					Most of what I find interesting sits in the gap between a model that scores well and a
-					model that is useful. A classifier that predicts nothing at all can post 89.8% accuracy;
-					a retrieval system can return confident citations for the wrong document. So the work I
-					care about is choosing the metric, calibrating the operating point, and being specific
-					about where a system fails.
-				</p>
-				<p class="cta"><a href="/projects">See what I've built →</a></p>
+			<div class="measure prose-body">
+				<Content />
+				{ctaLabel && ctaHref && <p class="cta"><a href={ctaHref}>{ctaLabel}</a></p>}
 			</div>
 
 			{
 				posts.length > 0 && (
 					<section class="recent">
-						<h2>Writing</h2>
+						<h2>{writingHeading ?? 'Writing'}</h2>
 						<ul>
 							{posts.map((post) => (
 								<li>
@@ -71,7 +65,11 @@ const metrics = [
 								</li>
 							))}
 						</ul>
-						<p class="cta"><a href="/blog">All posts →</a></p>
+						{allPostsLabel && (
+							<p class="cta">
+								<a href="/blog">{allPostsLabel}</a>
+							</p>
+						)}
 					</section>
 				)
 			}
@@ -119,6 +117,15 @@ const metrics = [
 	/* The one hook number per page that earns the accent. */
 	.metric-value.is-trap {
 		color: var(--accent);
+	}
+
+	/* Markdown body from home.md. :global because <Content /> output isn't scoped. */
+	.prose-body :global(p) {
+		margin-bottom: 1em;
+	}
+	.prose-body :global(a) {
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
 	}
 
 	/* Deliberately not capped at --measure: the rules run the full container width

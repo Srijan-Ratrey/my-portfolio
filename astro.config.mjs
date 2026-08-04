@@ -6,7 +6,11 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://srijan-ratrey.pages.dev',
+	// Must match the deployed origin exactly: the RSS feed, sitemap and canonical
+	// tags are built from it, and a stale value fails silently with a green build.
+	// Shape is <worker-name>.<account-subdomain>.workers.dev — worker name comes
+	// from `name` in wrangler.jsonc.
+	site: 'https://srijan-ratrey.sr5.workers.dev',
 	integrations: [mdx(), sitemap()],
 	fonts: [
 		{

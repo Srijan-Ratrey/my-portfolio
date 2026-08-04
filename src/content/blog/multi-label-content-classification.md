@@ -2,7 +2,7 @@
 title: 'A model that predicts nothing scores 89.83% accuracy'
 description: 'Fine-tuning DistilBERT for multi-label policy classification on the Jigsaw toxic comment data — and why choosing the metric mattered more than tuning the model.'
 pubDate: 'Jul 29 2026'
-heroImage: '../../assets/jigsaw-pr-baseline.png'
+heroImage: '/uploads/jigsaw-pr-baseline.png'
 ---
 
 Given a comment, predict **all** applicable policy labels — `toxic`, `severe_toxic`, `obscene`,

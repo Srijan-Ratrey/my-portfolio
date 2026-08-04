@@ -1,0 +1,12 @@
+{
+	// Static site on Cloudflare Workers — no `main` entrypoint, so this Worker only
+	// serves the prerendered output in ./dist. Astro needs no adapter for this.
+	// Deployed by `npx wrangler deploy` after `npm run build`.
+	"name": "srijan-ratrey",
+	"compatibility_date": "2026-08-04",
+	"assets": {
+		"directory": "./dist",
+		// Serve dist/404.html (from src/pages/404.astro) on an unmatched path.
+		"not_found_handling": "404-page"
+	}
+}

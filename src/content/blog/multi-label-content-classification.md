@@ -43,7 +43,10 @@ Per-label, for the final model (macro-AP 0.7359, Hamming loss 0.0158):
 | `severe_toxic` | 0.25 | 0.441 | 0.697 | **0.540** | 0.573 | 241 |
 | `threat` | 0.20 | 0.456 | 0.662 | **0.540** | 0.538 | 71 |
 
-![per-label PR curves](/jigsaw/pr_baseline.png)
+<figure>
+  <img src="/jigsaw/pr_baseline.png" alt="per-label PR curves" width="1522" height="756" loading="lazy" decoding="async">
+  <figcaption>Figure 1 — Precision–recall per label. Area under each curve is the AP reported above.</figcaption>
+</figure>
 
 ---
 
@@ -60,7 +63,10 @@ micro-F1 by being precise on frequent labels and nearly silent on rare ones — 
 it predicts `threat` just 9 times against 71 true positives. Micro pools every decision, so
 `toxic`'s 2,295 positives outvote `threat`'s 71 by ~32:1; macro weights the six labels equally.
 
-![micro vs macro](/jigsaw/metrics_micro_vs_macro.png)
+<figure>
+  <img src="/jigsaw/metrics_micro_vs_macro.png" alt="micro vs macro F1" width="1412" height="422" loading="lazy" decoding="async">
+  <figcaption>Figure 2 — Micro pools every decision, so frequent labels dominate. Macro weights all six equally.</figcaption>
+</figure>
 
 **Thresholds are worth more than they look.** Moving off 0.5 gains **+0.070 macro-F1 on the
 baseline** (+12.9%) and **+0.021 on the transformer**, with no retraining. The gain is concentrated where
@@ -68,7 +74,10 @@ it matters: on the transformer, `severe_toxic` +0.085 and `threat` +0.040. The g
 the model improves, which is the honest read — a better-calibrated model has less to recover at
 the operating point.
 
-![threshold sweep](/jigsaw/threshold_sweep_transformer.png)
+<figure>
+  <img src="/jigsaw/threshold_sweep_transformer.png" alt="threshold sweep, transformer" width="979" height="494" loading="lazy" decoding="async">
+  <figcaption>Figure 3 — Macro-F1 against decision threshold. The gain from moving off 0.5 shrinks as the model improves.</figcaption>
+</figure>
 
 **An undertrained model silently ignored its rarest label.** A first training run (lr 2e-5)
 scored macro-F1 0.5671 and predicted `threat` **zero times** — F1 0.000 with AP 0.257. Raising
@@ -80,7 +89,10 @@ the learning rate to 3e-5 took it to 0.6626 with `threat` F1 0.500. Both runs re
 `obscene`↔`insult` overlap 0.781/0.728. Six independent classifiers have no mechanism for any of
 this — the motivation for the classifier-chains comparison in Phase 6.
 
-![label co-occurrence](/jigsaw/eda_cooccurrence.png)
+<figure>
+  <img src="/jigsaw/eda_cooccurrence.png" alt="label co-occurrence" width="1463" height="532" loading="lazy" decoding="async">
+  <figcaption>Figure 4 — Every label is close to a subset of toxic — which One-vs-Rest has no way to represent.</figcaption>
+</figure>
 
 ---
 

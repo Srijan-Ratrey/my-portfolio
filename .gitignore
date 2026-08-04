@@ -24,3 +24,8 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Working briefs, not site content. PORTFOLIO-STATUS.txt names private employer
+# repos, so it must not be tracked in a public repository.
+PORTFOLIO-STATUS.txt
+REDESIGN-SWISS-GRID.md

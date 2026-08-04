@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+# The content editor. Not secret — it is protected by GitHub login — but there is no
+# reason for it to appear in search results.
+Disallow: /admin
+
+Sitemap: https://srijan-ratrey.sr5.workers.dev/sitemap-index.xml

@@ -2,7 +2,7 @@
 title: I retracted the benchmark numbers from my own README
 description: My hybrid retriever was never 9× faster than the baseline, it does strictly more work than the baseline. Here is what that benchmark actually measured, and what I replaced it with.
 pubDate: 2026-08-08
-updatedDate: ''
+updatedDate: 2026-08-08
 heroImage: /uploads/Screenshot 2026-08-08 at 6.34.33 PM.png
 ---
 

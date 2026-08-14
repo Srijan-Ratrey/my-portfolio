@@ -18,7 +18,7 @@ const isExternal = (href: string) => href.startsWith('http');
 	<head>
 		<BaseHead
 			title={`Projects | ${site.title}`}
-			description="Machine learning and backend projects — content safety classification, retrieval, and natural language to SQL."
+			description="Content safety classification, retrieval, natural language to SQL, and a real-time multiplayer game on Cloudflare Workers."
 		/>
 	</head>
 	<body>
@@ -49,6 +49,7 @@ const isExternal = (href: string) => href.startsWith('http');
 								{entry.data.links.map((link) => (
 									<a
 										href={link.href}
+										class:list={[{ primary: link.primary }]}
 										target={isExternal(link.href) ? '_blank' : undefined}
 										rel={isExternal(link.href) ? 'noopener' : undefined}
 									>
@@ -135,8 +136,28 @@ const isExternal = (href: string) => href.startsWith('http');
 	.links {
 		display: flex;
 		flex-wrap: wrap;
+		/* Centred, not the default stretch: the outlined .primary below is taller than
+		   the plain links, which would otherwise stretch and top-align their text. */
+		align-items: center;
 		gap: 1.5rem;
 		margin: 0;
 		font-size: 13px;
+	}
+	/* The one link per card that is a thing you can do rather than a thing to read.
+	   Every anchor on this site is already accent-coloured, so colour cannot mark this
+	   out — and there are no buttons anywhere else. Hence the square 1px outline
+	   borrowed from ul.stack above rather than a new shape. */
+	.links a.primary {
+		padding: 0.45em 0.9em;
+		border: 1px solid var(--accent);
+		border-radius: 0;
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.links a.primary:hover {
+		background: var(--accent);
+		color: var(--surface-0);
 	}
 </style>

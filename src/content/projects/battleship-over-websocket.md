@@ -12,6 +12,7 @@ stack:
 links:
   - label: Play
     href: https://battleship.sr5.workers.dev
+    primary: true
   - label: Repo
     href: https://github.com/Srijan-Ratrey/battleship
   - label: How it works

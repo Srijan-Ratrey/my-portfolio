@@ -74,6 +74,13 @@ collections:
             label: URL
             widget: string
             hint: A full https:// URL gets an ↗ arrow; a path like /blog/… gets a → arrow.
+          - name: primary
+            label: Primary action
+            widget: boolean
+            required: false
+            hint: >-
+              Tick for a live demo you can use right now — renders as the outlined action
+              instead of a plain link. At most one per project.
 
   # -------------------------------------------------------------- experience
   - name: experience

@@ -18,7 +18,22 @@ import { z } from 'astro/zod';
 const linkSchema = z.object({
 	label: z.string(),
 	href: z.string(),
+	/*
+	  The one link on a card that is an action rather than a reference — a live demo you
+	  can use right now. Renders as the outlined action; everything else stays a plain
+	  link. At most one per project, the same restraint as `accent` on a home metric.
+	*/
+	primary: z.boolean().optional(),
 });
+
+/*
+  The CMS writes an empty string for a blank optional field rather than omitting the
+  key. `z.coerce.date()` turns '' into an Invalid Date and fails the build, so a post
+  saved from /admin with no Updated date breaks production until someone edits the
+  file by hand. Normalise '' and null to undefined before the inner schema sees them.
+*/
+const blankable = <T extends z.ZodTypeAny>(schema: T) =>
+	z.preprocess((value) => (value === '' || value === null ? undefined : value), schema.optional());
 
 const blog = defineCollection({
 	// Load Markdown and MDX files in the `src/content/blog/` directory.
@@ -29,12 +44,12 @@ const blog = defineCollection({
 		description: z.string(),
 		// Transform string to Date object
 		pubDate: z.coerce.date(),
-		updatedDate: z.coerce.date().optional(),
+		updatedDate: blankable(z.coerce.date()),
 		// A path under public/, e.g. /uploads/chart.png. A plain string rather than
 		// Astro's image() helper so the CMS can upload it — image() requires the file
 		// to sit under src/assets/, which CMS uploads never do. Only used for
 		// og:image, so losing image optimisation costs effectively nothing.
-		heroImage: z.string().optional(),
+		heroImage: blankable(z.string()),
 	}),
 });
 

@@ -2,8 +2,8 @@
 title: I retracted the benchmark numbers from my own README
 description: My hybrid retriever was never 9× faster than the baseline, it does strictly more work than the baseline. Here is what that benchmark actually measured, and what I replaced it with.
 pubDate: 2026-08-08
-updatedDate: 2026-08-08
-heroImage: /uploads/Screenshot 2026-08-08 at 6.34.33 PM.png
+updatedDate: 2026-08-14
+heroImage: ''
 ---
 
 The README for my RAG system used to quote two numbers. A hybrid reranker that improved confidence by 5.9%, and that ran roughly 9× faster than the cosine-similarity baseline.
@@ -19,6 +19,8 @@ Two retrieval paths. The baseline is dense retrieval: embed the query, take the 
 The question the benchmark was supposed to settle is whether the hybrid is worth having.
 
 ## "9× faster" was not a surprising result. It was an impossible one.
+
+![](/uploads/Screenshot%202026-08-08%20at%206.34.33%20PM.png)
 
 Look at what the hybrid does. It performs the entire dense retrieval path, and then it computes BM25 scores, and then it fuses the two ranked lists. Every operation the baseline performs, the hybrid also performs, plus more.
 

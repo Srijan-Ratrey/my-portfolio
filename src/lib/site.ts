@@ -20,3 +20,19 @@ export async function getSite() {
 	}
 	return site.data;
 }
+
+/*
+  Sort key for the two hand-ordered collections, projects and experience. Orders are
+  deliberately sparse — 10, 20, 30 — so inserting an entry is a one-file edit and never
+  a renumbering of its siblings; to put something first, give it anything below 10. The
+  card numbers on the page are positional, so they close up on their own.
+
+  The fallbacks matter: without them two entries claiming the same number are left in glob
+  order, which is alphabetical by filename today and is not a promise. `id` comes last
+  because it is the only field guaranteed unique, which makes the comparator total — title
+  alone is not enough, as both experience roles are called "AI/ML Intern".
+*/
+export const byOrder = <T extends { id: string; data: { order: number; title: string } }>(
+	a: T,
+	b: T,
+) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title) || a.id.localeCompare(b.id);

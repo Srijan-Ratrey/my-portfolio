@@ -3,10 +3,10 @@ import { getCollection, render } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { getSite } from '../lib/site';
+import { byOrder, getSite } from '../lib/site';
 
-// Roles come from src/content/experience/*.md, one file per role, sorted by their
-// `order` field. Everything else on this page comes from src/content/pages/about.md
+// Roles come from src/content/experience/*.md, one file per role, ordered by their
+// `order` field via byOrder. Everything else on this page comes from src/content/pages/about.md
 // — education, skills and certificates from its frontmatter, the narrative from
 // its body.
 const site = await getSite();
@@ -17,7 +17,7 @@ if (!about) throw new Error('Missing src/content/pages/about.md');
 const { Content } = await render(about);
 const { heading, lede, description, education, skills = [], certificates = [] } = about.data;
 
-const roles = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
+const roles = (await getCollection('experience')).sort(byOrder);
 ---
 
 <!doctype html>

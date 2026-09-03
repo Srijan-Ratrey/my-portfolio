@@ -50,8 +50,11 @@ collections:
         label: Order
         widget: number
         value_type: int
-        min: 1
-        hint: Lower numbers appear first on the page.
+        min: 0
+        hint: >-
+          Lower numbers come first. Spaced by 10 (10, 20, 30…) so you can insert one
+          anywhere without renumbering the others — to make this first use 5 or 0, to slot
+          it between 30 and 40 use 35. The 01/02 labels on the page renumber themselves.
       - name: blurb
         label: Blurb
         widget: text
@@ -107,7 +110,10 @@ collections:
         label: Order
         widget: number
         value_type: int
-        min: 1
+        min: 0
+        hint: >-
+          Lower numbers come first. Leave gaps so you can insert a role between two
+          existing ones without renumbering them — to make this first, use 0.
       - name: bullets
         label: Bullets
         widget: list

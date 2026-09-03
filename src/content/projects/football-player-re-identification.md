@@ -1,6 +1,6 @@
 ---
 title: 'Football player re-identification'
-order: 4
+order: 50
 blurb: >-
   Keeps player IDs stable across a football video feed, including when a player leaves the
   frame and comes back.

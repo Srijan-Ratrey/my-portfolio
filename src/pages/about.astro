@@ -18,6 +18,22 @@ const { Content } = await render(about);
 const { heading, lede, description, education, skills = [], certificates = [] } = about.data;
 
 const roles = (await getCollection('experience')).sort(byOrder);
+
+// Skills are a comma list per group; an item may carry a self-assessed rank
+// suffix, "Python (S)". Ranked items get the letter and a mana bar, unranked
+// ones just the name — no rank is ever invented here.
+const RANK_PCT: Record<string, number> = { S: 95, A: 82, B: 70, C: 55, D: 40, E: 25 };
+const parseSkills = (items: string) =>
+	items
+		.split(',')
+		.map((s) => s.trim())
+		.filter(Boolean)
+		.map((s) => {
+			const m = s.match(/^(.*?)\s*\(([SABCDE])\)$/i);
+			return m ? { name: m[1], rank: m[2].toUpperCase() } : { name: s, rank: undefined };
+		});
+// Decorative kanji per group, cycled: power, knowledge, speed, fortune, magic, art.
+const KANJI = ['力', '知', '速', '運', '魔', '術'];
 ---
 
 <!doctype html>
@@ -36,8 +52,8 @@ const roles = (await getCollection('experience')).sort(byOrder);
 
 			{
 				roles.length > 0 && (
-					<section class="block">
-						<h2 class="section-label">Experience</h2>
+					<section class="sys block" style="--i:0">
+						<h2 class="sys-head">Experience</h2>
 						<ol class="roles">
 							{roles.map((role) => (
 								<li class="role">
@@ -64,8 +80,8 @@ const roles = (await getCollection('experience')).sort(byOrder);
 
 			{
 				education && (
-					<section class="block">
-						<h2 class="section-label">Education</h2>
+					<section class="sys block" style="--i:1">
+						<h2 class="sys-head">Education</h2>
 						<div class="role-head">
 							<div>
 								<h3>{education.degree}</h3>
@@ -79,24 +95,47 @@ const roles = (await getCollection('experience')).sort(byOrder);
 
 			{
 				skills.length > 0 && (
-					<section class="block">
-						<h2 class="section-label">Skills</h2>
-						<dl class="skills">
-							{skills.map((s) => (
-								<div class="skill-row">
-									<dt>{s.group}</dt>
-									<dd>{s.items}</dd>
+					<section class="block stats">
+						<h2 class="stats-title">
+							<span class="br">[</span> Hunter Stats <span class="br">]</span>
+						</h2>
+						<div class="stat-grid">
+							{skills.map((s, i) => (
+								<div class="sys stat-card" style={`--i:${i}`}>
+									<h3>
+										<span class="kanji" aria-hidden="true">
+											{KANJI[i % KANJI.length]}
+										</span>
+										{s.group}
+									</h3>
+									<ul>
+										{parseSkills(s.items).map((it) => (
+											<li>
+												<span class="name">{it.name}</span>
+												{it.rank && (
+													<>
+														<span class={`rank r-${it.rank}`}>{it.rank}</span>
+														<span
+															class="bar"
+															style={`--p:${RANK_PCT[it.rank]}%`}
+															aria-hidden="true"
+														/>
+													</>
+												)}
+											</li>
+										))}
+									</ul>
 								</div>
 							))}
-						</dl>
+						</div>
 					</section>
 				)
 			}
 
 			{
 				certificates.length > 0 && (
-					<section class="block">
-						<h2 class="section-label">Certificates</h2>
+					<section class="sys block" style="--i:3">
+						<h2 class="sys-head">Certificates</h2>
 						<ul class="plain">
 							{certificates.map((c) => (
 								<li>{c}</li>
@@ -106,8 +145,8 @@ const roles = (await getCollection('experience')).sort(byOrder);
 				)
 			}
 
-			<section class="block">
-				<h2 class="section-label">Elsewhere</h2>
+			<section class="sys block" style="--i:4">
+				<h2 class="sys-head">Elsewhere</h2>
 				<ul class="plain links">
 					<li>
 						<a href={site.github} target="_blank" rel="noopener">GitHub ↗</a>
@@ -145,19 +184,11 @@ const roles = (await getCollection('experience')).sort(byOrder);
 		text-underline-offset: 0.2em;
 	}
 
-	/* Each block's rule runs the full container while its prose stops at --measure. */
 	.block {
-		margin-top: 3.5rem;
+		margin-top: 2.5rem;
 	}
-	.section-label {
-		font-size: 11px;
-		font-weight: 500;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--text-muted);
-		padding-bottom: 0.5rem;
+	.block .sys-head {
 		margin-bottom: 0;
-		border-bottom: 2px solid var(--rule-strong);
 	}
 
 	.roles {
@@ -185,9 +216,9 @@ const roles = (await getCollection('experience')).sort(byOrder);
 	}
 	.role-head h3 {
 		margin: 0;
-		font-size: 1.2rem;
-		font-weight: 500;
-		letter-spacing: -0.01em;
+		font-size: 1.4rem;
+		font-weight: 700;
+		letter-spacing: 0.01em;
 	}
 	.org {
 		margin: 0.2rem 0 0;
@@ -217,48 +248,93 @@ const roles = (await getCollection('experience')).sort(byOrder);
 		font-size: 15px;
 		color: var(--text-secondary);
 	}
-	/* A rule, not a bullet glyph. */
 	.bullets li::before {
-		content: '';
+		content: '▸';
 		position: absolute;
 		left: 0;
-		top: 0.7em;
-		width: 0.6rem;
-		height: 1px;
-		background: var(--rule-strong);
+		color: var(--accent);
 	}
 
-	.skills {
-		margin: 0;
-	}
-	.skill-row {
-		display: grid;
-		grid-template-columns: minmax(0, 10rem) minmax(0, 1fr);
-		gap: 0 1.5rem;
-		padding: 0.85rem 0;
-		border-bottom: 1px solid var(--rule);
-	}
-	.skill-row:last-child {
-		border-bottom: none;
-	}
-	.skills dt {
-		font-size: 11px;
-		font-weight: 500;
-		letter-spacing: 0.08em;
+	/* ---- Hunter Stats ---- */
+	.stats-title {
+		margin: 0 0 1.75rem;
+		text-align: center;
+		font-size: clamp(1.8rem, 5vw, 2.8rem);
+		font-weight: 700;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: var(--text-muted);
-		padding-top: 0.2rem;
+		color: var(--accent);
+		text-shadow: var(--text-glow);
 	}
-	.skills dd {
+	.stats-title .br {
+		color: var(--monarch);
+		font-weight: 500;
+	}
+	/* Masonry via multi-column: each card is as tall as its list, so a short group
+	   (Languages) ends early instead of stretching into an empty box. Columns fill
+	   top-to-bottom, so order reads down then across. */
+	.stat-grid {
+		columns: 22rem 2;
+		column-gap: 1.5rem;
+	}
+	.stat-card {
+		break-inside: avoid;
+		margin-bottom: 1.5rem;
+	}
+	.stat-card h3 {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin: 0 0 1.25rem;
+		font-size: 1.1rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--monarch);
+	}
+	.kanji {
+		font-family: serif;
+		font-size: 1.6rem;
+		font-weight: 400;
+		letter-spacing: 0;
+		color: rgba(76, 201, 255, 0.4);
+	}
+	.stat-card ul {
+		list-style: none;
 		margin: 0;
-		font-size: 15px;
-		color: var(--text-secondary);
+		padding: 0;
 	}
-	@media (max-width: 560px) {
-		.skill-row {
-			grid-template-columns: minmax(0, 1fr);
-			gap: 0.3rem;
-		}
+	/* name | rank | bar. Unranked items just take the first column. */
+	.stat-card li {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 1.5rem 38%;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.45rem 0;
+	}
+	.stat-card .name {
+		font-family: var(--font-mono);
+		font-size: 14px;
+		letter-spacing: 0.04em;
+		color: var(--text-primary);
+	}
+	.rank {
+		font-family: var(--font-display);
+		font-weight: 700;
+		text-align: center;
+	}
+	.r-S { color: #ffd34d; text-shadow: 0 0 10px rgba(255, 211, 77, 0.6); }
+	.r-A { color: var(--accent); }
+	.r-B,
+	.r-C,
+	.r-D,
+	.r-E { color: var(--monarch); }
+	/* The global .bar, recoloured cyan-to-purple and unmargined for the row. */
+	.stat-card .bar {
+		margin: 0;
+	}
+	.stat-card .bar::before {
+		background: linear-gradient(90deg, var(--accent), var(--monarch));
 	}
 
 	ul.plain {

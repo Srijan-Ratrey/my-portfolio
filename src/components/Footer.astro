@@ -6,7 +6,7 @@ const today = new Date();
 ---
 
 <footer>
-	&copy; {today.getFullYear()} {site.title}
+	<span>&copy; {today.getFullYear()} {site.title} <span class="hint">「 Type ARISE 」</span></span>
 	<div class="social-links">
 		<a href={site.github} target="_blank" rel="me noopener">
 			<span class="sr-only">GitHub profile</span>
@@ -34,6 +34,13 @@ const today = new Date();
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
+	}
+	.hint {
+		margin-left: 1rem;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.12em;
+		color: rgba(76, 201, 255, 0.35);
 	}
 	.social-links {
 		display: flex;

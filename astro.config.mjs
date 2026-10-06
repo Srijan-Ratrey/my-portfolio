@@ -49,14 +49,23 @@ export default defineConfig({
 	},
 	fonts: [
 		{
-			// Inter, the neutral grotesk the Swiss treatment needs. Astro self-hosts
-			// this at build time, so there is no runtime Google Fonts request.
-			// Weights 400 and 500 only — nothing here uses 600 or 700.
+			// Inter for body copy. Astro self-hosts this at build time, so there is no
+			// runtime Google Fonts request.
 			provider: fontProviders.google(),
 			name: 'Inter',
 			cssVariable: '--font-inter',
 			fallbacks: ['-apple-system', 'Helvetica Neue', 'Arial', 'sans-serif'],
-			weights: [400, 500],
+			weights: [400, 500, 600],
+			styles: ['normal'],
+			subsets: ['latin'],
+		},
+		{
+			// Rajdhani: the squared HUD face for headings, labels and System windows.
+			provider: fontProviders.google(),
+			name: 'Rajdhani',
+			cssVariable: '--font-rajdhani',
+			fallbacks: ['sans-serif'],
+			weights: [500, 600, 700],
 			styles: ['normal'],
 			subsets: ['latin'],
 		},

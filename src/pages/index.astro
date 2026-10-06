@@ -15,6 +15,14 @@ if (!home) throw new Error('Missing src/content/pages/home.md');
 const { Content } = await render(home);
 const { heading, lede, metrics = [], ctaLabel, ctaHref, writingHeading, allPostsLabel } = home.data;
 
+// Mana bar width for a metric, only where the value is itself a proportion:
+// "89.83%" -> 89.83, "0.684" -> 68.4, "23,936" -> no bar.
+const barPct = (v: string) => {
+	const n = parseFloat(v);
+	if (v.trim().endsWith('%')) return n;
+	return v.includes('.') && n >= 0 && n <= 1 ? n * 100 : undefined;
+};
+
 const posts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
@@ -28,20 +36,38 @@ const posts = (await getCollection('blog'))
 	<body>
 		<Header />
 		<main>
+			<div class="sys notice" style="--i:0">
+				<div class="sys-head"><span>! Notification</span><span class="dim">The System</span></div>
+				<p>You have entered the portfolio of a Player. Proceed?</p>
+			</div>
+
 			<div class="measure">
-				<h1>{heading}</h1>
+				<h1 class="glitch" data-text={heading}>{heading}</h1>
 				<p class="intro">{lede}</p>
 			</div>
 
 			{
 				metrics.length > 0 && (
-					<div class="metrics">
-						{metrics.map((m) => (
-							<div class="metric">
-								<span class="metric-label">{m.label}</span>
-								<span class:list={['metric-value', { 'is-trap': m.accent }]}>{m.value}</span>
-							</div>
-						))}
+					<div class="sys status" style="--i:1">
+						<div class="sys-head">
+							<span>Status</span>
+							<span class="dim">Stats</span>
+						</div>
+						<div class="metrics">
+							{metrics.map((m) => (
+								<div class="metric">
+									<span class="metric-label">{m.label}</span>
+									<span class:list={['metric-value', { 'is-trap': m.accent }]}>{m.value}</span>
+									{barPct(m.value) !== undefined && (
+										<span
+											class:list={['bar', { monarch: m.accent }]}
+											style={`--p:${barPct(m.value)}%`}
+											aria-hidden="true"
+										/>
+									)}
+								</div>
+							))}
+						</div>
 					</div>
 				)
 			}
@@ -52,9 +78,16 @@ const posts = (await getCollection('blog'))
 			</div>
 
 			{
+				posts.length > 0 && <hr />
+			}
+
+			{
 				posts.length > 0 && (
-					<section class="recent">
-						<h2>{writingHeading ?? 'Writing'}</h2>
+					<section class="sys recent" style="--i:2">
+						<h2 class="sys-head">
+							<span>{writingHeading ?? 'Writing'}</span>
+							<span class="dim">Quest log</span>
+						</h2>
 						<ul>
 							{posts.map((post) => (
 								<li>
@@ -86,37 +119,56 @@ const posts = (await getCollection('blog'))
 		margin-top: 1.25rem;
 	}
 
-	/* Left-border cells, no radius — single-sided borders and rounded corners
-	   never mix. */
-	.metrics {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1.5rem;
+	.notice {
+		max-width: 34rem;
+		margin-bottom: 2.5rem;
+		padding: 1rem 1.25rem;
+	}
+	.notice p {
+		margin: 0;
+		color: var(--text-secondary);
+	}
+
+	.status {
 		margin: 2.5rem 0;
 	}
+	.metrics {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+		gap: 1.5rem;
+	}
 	.metric {
-		border-left: 2px solid var(--rule-strong);
-		padding-left: 0.75rem;
+		border-left: 2px solid var(--accent-quiet);
+		padding-left: 0.85rem;
 	}
 	.metric-label {
 		display: block;
-		font-size: 11px;
-		font-weight: 500;
-		letter-spacing: 0.08em;
+		font-family: var(--font-display);
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 	}
 	.metric-value {
 		display: block;
-		font-size: 1.75rem;
-		font-weight: 500;
+		font-family: var(--font-display);
+		font-size: 2.4rem;
+		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 		color: var(--text-primary);
-		line-height: 1.2;
+		text-shadow: var(--text-glow);
+		line-height: 1.1;
 	}
-	/* The one hook number per page that earns the accent. */
+	/* The one hook number per page — Shadow Monarch purple. */
+	.metric:has(.is-trap) {
+		border-left-color: var(--monarch);
+	}
 	.metric-value.is-trap {
-		color: var(--accent);
+		color: var(--monarch);
+		text-shadow:
+			0 0 10px rgba(180, 140, 255, 0.8),
+			0 0 30px rgba(180, 140, 255, 0.4);
 	}
 
 	/* Markdown body from home.md. :global because <Content /> output isn't scoped. */
@@ -128,19 +180,8 @@ const posts = (await getCollection('blog'))
 		text-underline-offset: 0.2em;
 	}
 
-	/* Deliberately not capped at --measure: the rules run the full container width
-	   while the prose above stops short. That contrast is the point. */
 	.recent {
 		margin-top: 4rem;
-	}
-	.recent h2 {
-		font-size: 11px;
-		font-weight: 500;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--text-muted);
-		padding-bottom: 0.5rem;
-		border-bottom: 2px solid var(--rule-strong);
 	}
 	.recent ul {
 		list-style: none;
@@ -156,9 +197,16 @@ const posts = (await getCollection('blog'))
 		padding: 0.85rem 0;
 		border-bottom: 1px solid var(--rule);
 	}
+	.recent li:last-child {
+		border-bottom: none;
+	}
 	.recent li a {
 		color: var(--text-primary);
 		text-decoration: none;
+	}
+	.recent li a::before {
+		content: '▸ ';
+		color: var(--accent);
 	}
 	.recent li a:hover {
 		color: var(--accent);
@@ -173,6 +221,13 @@ const posts = (await getCollection('blog'))
 	}
 	.cta {
 		margin-top: 1.5rem;
-		font-size: 14px;
+		font-family: var(--font-display);
+		font-size: 15px;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+	.prose-body .cta :global(a) {
+		text-decoration: none;
 	}
 </style>

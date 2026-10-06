@@ -1,0 +1,130 @@
+<script>
+	// The site's only client JS: cursor trail, card tilt, and the ARISE easter egg.
+	// Trail and tilt need a fine pointer; all motion is skipped under
+	// prefers-reduced-motion. If this fails to load, the page loses nothing but
+	// decoration.
+	const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const fine = matchMedia('(pointer: fine)').matches;
+
+	if (fine && !reduced) {
+		// ---- Shadow Monarch cursor trail. The loop only runs while particles exist.
+		const canvas = document.createElement('canvas');
+		canvas.className = 'fx-trail';
+		document.body.append(canvas);
+		const ctx = canvas.getContext('2d')!;
+		const size = () => {
+			canvas.width = innerWidth;
+			canvas.height = innerHeight;
+		};
+		size();
+		addEventListener('resize', size);
+
+		type P = { x: number; y: number; vx: number; vy: number; r: number; life: number; c: string };
+		const trail: P[] = [];
+		let running = false;
+		const tick = () => {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			for (let i = trail.length - 1; i >= 0; i--) {
+				const p = trail[i];
+				p.x += p.vx;
+				p.y += p.vy;
+				p.life -= 0.02;
+				if (p.life <= 0) {
+					trail.splice(i, 1);
+					continue;
+				}
+				ctx.globalAlpha = p.life * 0.7;
+				ctx.fillStyle = p.c;
+				ctx.shadowColor = p.c;
+				ctx.shadowBlur = 10;
+				ctx.beginPath();
+				ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+				ctx.fill();
+			}
+			running = trail.length > 0;
+			if (running) requestAnimationFrame(tick);
+		};
+		addEventListener('mousemove', (e) => {
+			for (let i = 0; i < 2; i++) {
+				trail.push({
+					x: e.clientX + (Math.random() - 0.5) * 8,
+					y: e.clientY + (Math.random() - 0.5) * 8,
+					vx: (Math.random() - 0.5) * 1.5,
+					vy: (Math.random() - 0.5) * 1.5 - 0.5,
+					r: Math.random() * 5 + 2,
+					life: 1,
+					c: Math.random() > 0.5 ? '#4cc9ff' : '#b48cff',
+				});
+			}
+			if (trail.length > 150) trail.splice(0, trail.length - 150);
+			if (!running) {
+				running = true;
+				requestAnimationFrame(tick);
+			}
+		});
+
+		// ---- Card tilt + cursor glow. JS only sets variables; CSS does the rest.
+		for (const el of document.querySelectorAll<HTMLElement>('[data-tilt]')) {
+			el.addEventListener('pointermove', (e) => {
+				const r = el.getBoundingClientRect();
+				const x = (e.clientX - r.left) / r.width;
+				const y = (e.clientY - r.top) / r.height;
+				el.style.setProperty('--ry', `${(x - 0.5) * 6}deg`);
+				el.style.setProperty('--rx', `${(0.5 - y) * 6}deg`);
+				el.style.setProperty('--gx', `${x * 100}%`);
+				el.style.setProperty('--gy', `${y * 100}%`);
+				el.style.setProperty('--gi', '1');
+				el.classList.add('tilting');
+			});
+			el.addEventListener('pointerleave', () => {
+				for (const v of ['--rx', '--ry', '--gi']) el.style.removeProperty(v);
+				el.classList.remove('tilting');
+			});
+		}
+	}
+
+	// ---- ARISE: type it anywhere.
+	let keys = '';
+	let cooling = false;
+	addEventListener('keydown', (e) => {
+		const t = e.target as HTMLElement | null;
+		if (e.metaKey || e.ctrlKey || e.altKey || e.key.length !== 1) return;
+		if (t && (t.closest('input, textarea, select') || t.isContentEditable)) return;
+		keys = (keys + e.key.toLowerCase()).slice(-5);
+		if (keys !== 'arise' || cooling) return;
+		keys = '';
+		cooling = true;
+		setTimeout(() => (cooling = false), 10000);
+
+		const overlay = document.createElement('div');
+		overlay.id = 'arise';
+		overlay.setAttribute('aria-hidden', 'true');
+		if (!reduced) {
+			const n = Math.floor(innerWidth / 70);
+			for (let i = 0; i < n; i++) {
+				const s = document.createElement('span');
+				s.className = 'soldier';
+				s.style.cssText = `--x:${((i + 1) / (n + 1)) * 100}%;--d:${Math.random() * 0.6}s;--h:${50 + Math.random() * 70}px;--rise:${30 + Math.random() * 30}vh`;
+				overlay.append(s);
+			}
+			for (let i = 0; i < 12; i++) {
+				const s = document.createElement('span');
+				s.className = 'smoke';
+				s.style.cssText = `--x:${Math.random() * 100}%;--d:${Math.random() * 1.2}s`;
+				overlay.append(s);
+			}
+			document.querySelector('main')?.classList.add('shake');
+		}
+		const word = document.createElement('div');
+		word.className = 'easter-word';
+		word.textContent = 'ARISE';
+		overlay.append(word);
+		document.body.append(overlay);
+
+		setTimeout(() => {
+			overlay.classList.add('fade');
+			document.querySelector('main')?.classList.remove('shake');
+			setTimeout(() => overlay.remove(), 600);
+		}, 2600);
+	});
+</script>

@@ -3,7 +3,19 @@ import { getSite } from '../lib/site';
 
 const site = await getSite();
 import HeaderLink from './HeaderLink.astro';
+
+// The System's arrival toast, chosen by section. Decorative, so aria-hidden.
+const section = Astro.url.pathname.split('/')[1] ?? '';
+const toast =
+	{
+		'': 'New player profile loaded.',
+		projects: 'Dungeon records accessed.',
+		blog: 'Quest logs synced.',
+		about: 'Player data synced.',
+	}[section] ?? 'Gate scanned.';
 ---
+
+<div class="sys-toast" aria-hidden="true"><b>「 System 」</b> {toast}</div>
 
 <header>
 	<nav>
@@ -32,11 +44,17 @@ import HeaderLink from './HeaderLink.astro';
 </header>
 <style>
 	header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
 		margin: 0;
 		padding: 0 var(--gutter);
-		background: var(--surface-0);
-		/* A major division: the full-width rule under the header. No bar, no shadow. */
-		border-bottom: 2px solid var(--rule-strong);
+		background: rgba(4, 6, 12, 0.75);
+		backdrop-filter: blur(10px);
+		border-bottom: 1px solid rgba(76, 201, 255, 0.5);
+		box-shadow: 0 0 24px rgba(76, 201, 255, 0.18);
+		/* Its own transition layer, so it holds still through the gate transition. */
+		view-transition-name: site-header;
 	}
 	nav {
 		display: flex;
@@ -48,14 +66,34 @@ import HeaderLink from './HeaderLink.astro';
 	}
 	h2 {
 		margin: 0;
-		font-size: 13px;
-		font-weight: 500;
-		letter-spacing: 0.08em;
+		font-size: 15px;
+		font-weight: 700;
+		letter-spacing: 0.18em;
 		text-transform: uppercase;
 	}
-	h2 a {
+	/* nav-qualified so it beats `nav a` below, which would otherwise mute it. */
+	nav h2 a {
+		font-size: 15px;
 		color: var(--text-primary);
 		text-decoration: none;
+		text-shadow: var(--text-glow);
+	}
+	/* The "player online" pip. */
+	nav h2 a::before {
+		content: '';
+		display: inline-block;
+		width: 7px;
+		height: 7px;
+		margin-right: 0.6em;
+		vertical-align: 0.15em;
+		background: var(--accent);
+		box-shadow: 0 0 10px var(--accent);
+		animation: pulse 2s ease-in-out infinite;
+	}
+	@keyframes pulse {
+		50% {
+			opacity: 0.3;
+		}
 	}
 	.internal-links {
 		display: flex;
@@ -64,24 +102,28 @@ import HeaderLink from './HeaderLink.astro';
 	}
 	nav a {
 		padding: 1.1rem 0;
-		font-size: 12px;
-		font-weight: 500;
-		letter-spacing: 0.08em;
+		font-family: var(--font-display);
+		font-size: 14px;
+		font-weight: 600;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
-		/* Was `var(--black)`, an RGB triplet used without rgb() — invalid, so the
-		   declaration was dropped and this inherited. It never worked. */
 		color: var(--text-muted);
 		text-decoration: none;
 		border-bottom: 2px solid transparent;
+		transition:
+			color 0.2s,
+			border-color 0.2s;
 	}
 	nav a:hover {
 		color: var(--text-primary);
 	}
 	/* Sits on the header's own rule so it reads as a tab, not a floating underline. */
 	nav a.active {
-		color: var(--text-primary);
+		color: var(--accent);
+		text-shadow: var(--text-glow);
 		border-bottom-color: var(--accent);
-		margin-bottom: -2px;
+		box-shadow: 0 6px 12px -6px var(--accent);
+		margin-bottom: -1px;
 	}
 	.social-links,
 	.social-links a {

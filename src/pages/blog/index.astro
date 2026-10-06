@@ -25,10 +25,11 @@ const posts = (await getCollection('blog')).sort(
 				list-style-type: none;
 				margin: 0;
 				padding: 0;
-				border-top: 2px solid var(--rule-strong);
+				display: grid;
+				gap: 1.25rem;
 			}
-			ul li {
-				border-bottom: 1px solid var(--rule);
+			ul li.sys {
+				padding: 0.25rem 1.5rem;
 			}
 			ul li a {
 				display: flex;
@@ -42,9 +43,9 @@ const posts = (await getCollection('blog')).sort(
 			.title {
 				margin: 0;
 				color: var(--text-primary);
-				font-size: 1.2rem;
-				font-weight: 500;
-				letter-spacing: -0.01em;
+				font-size: 1.4rem;
+				font-weight: 700;
+				letter-spacing: 0.01em;
 				line-height: 1.25;
 			}
 			.date {
@@ -56,10 +57,9 @@ const posts = (await getCollection('blog')).sort(
 				text-transform: uppercase;
 				white-space: nowrap;
 			}
-			/* Was rgb(var(--accent)) — but --accent is a hex value, so rgb(#hex) is
-			   invalid and the declaration was dropped. This hover never worked. */
 			ul li a:hover .title {
 				color: var(--accent);
+				text-shadow: var(--text-glow);
 			}
 		</style>
 	</head>
@@ -72,8 +72,8 @@ const posts = (await getCollection('blog')).sort(
 			<section>
 				<ul>
 					{
-						posts.map((post) => (
-							<li>
+						posts.map((post, i) => (
+							<li class="sys" style={`--i:${i}`} data-tilt>
 								<a href={`/blog/${post.id}/`}>
 									<h2 class="title">{post.data.title}</h2>
 									<p class="date">

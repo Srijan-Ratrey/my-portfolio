@@ -215,7 +215,7 @@ collections:
             required: false
             fields:
               - { name: group, label: Group, widget: string }
-              - { name: items, label: Items, widget: text, hint: Comma-separated. }
+              - { name: items, label: Items, widget: text, hint: 'Comma-separated. Optional rank S–E in brackets shows a rank + bar, e.g. "Python (S), SQL (A)".' }
           - name: certificates
             label: Certificates
             widget: list

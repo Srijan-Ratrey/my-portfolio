@@ -32,8 +32,27 @@ const posts = (await getCollection('blog'))
 <html lang="en">
 	<head>
 		<BaseHead title={site.title} description={site.description} />
+		<!-- Hunter-data intro: once per browsing session. Runs before first paint so a
+			 repeat visit never flashes it. Blocked storage just means it plays again. -->
+		<script is:inline>
+			try {
+				if (sessionStorage.getItem('hunterIntro')) document.documentElement.dataset.introSeen = '';
+				else sessionStorage.setItem('hunterIntro', '1');
+			} catch {}
+		</script>
 	</head>
 	<body>
+		<div class="hunter-intro" aria-hidden="true">
+			<span class="intro-rift"></span>
+			<div class="intro-stage">
+				<div class="sys intro-window" style="--i:-1">
+					<div class="sys-head"><span>! Notification</span><span class="dim">The System</span></div>
+					<p class="intro-line l1">You have acquired the qualifications to be a <b>Player</b>.</p>
+					<p class="intro-line l2">Hunter data loading… <span class="intro-pct"></span></p>
+					<span class="intro-bar"></span>
+				</div>
+			</div>
+		</div>
 		<Header />
 		<main>
 			<div class="sys notice" style="--i:0">

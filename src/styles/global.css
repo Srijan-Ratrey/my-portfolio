@@ -813,7 +813,156 @@ main::after {
 	60% { transform: translate(2px, -1px); }
 }
 
+/* Home-page intro, 2s, once per session — see the inline script in index.astro.
+   The System notification opens, hunter data counts to 100%, then a rift tears
+   down the middle and the screen parts like a gate. Never blocks clicks.
+   Timeline: window 0–0.5s · lines 0.35–0.9s · bar 0.8–1.45s · window out
+   1.45–1.7s · rift 1.4–1.75s · gate halves part 1.6–2s. */
+@property --pct {
+	syntax: '<integer>';
+	inherits: false;
+	initial-value: 0;
+}
+.hunter-intro {
+	position: fixed;
+	inset: 0;
+	z-index: 300;
+	display: grid;
+	place-items: center;
+	padding: 0 1rem;
+	overflow: hidden;
+	pointer-events: none;
+	animation: intro-done 2s step-end forwards;
+}
+[data-intro-seen] .hunter-intro {
+	display: none;
+}
+/* The two gate halves. */
+.hunter-intro::before,
+.hunter-intro::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 50.5%;
+	background:
+		radial-gradient(ellipse 45% 60% at 50% 50%, rgba(40, 90, 200, 0.22), transparent 70%),
+		var(--surface-0);
+	/* One glow centred on the seam, split across both halves. */
+	background-size: 200% 100%;
+}
+/* Full shorthands, each with its name: a nameless shorthand plus a separate
+   animation-name gets minified to `animation: none` and the gate never opens. */
+.hunter-intro::before {
+	left: 0;
+	background-position: left center;
+	animation: gate-left 0.4s cubic-bezier(0.65, 0, 0.35, 1) 1.6s forwards;
+}
+.hunter-intro::after {
+	right: 0;
+	background-position: right center;
+	animation: gate-right 0.4s cubic-bezier(0.65, 0, 0.35, 1) 1.6s forwards;
+}
+@keyframes gate-left {
+	to { transform: translateX(-100%); }
+}
+@keyframes gate-right {
+	to { transform: translateX(100%); }
+}
+@keyframes intro-done {
+	to { visibility: hidden; }
+}
+
+/* The tear: a white-hot line that strikes top to bottom, then flares. */
+.intro-rift {
+	position: absolute;
+	z-index: 2;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	width: 2px;
+	margin-left: -1px;
+	background: #e8f6ff;
+	box-shadow:
+		0 0 12px 2px var(--accent),
+		0 0 40px 8px rgba(180, 140, 255, 0.6);
+	transform: scaleY(0);
+	animation: rift 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) 1.4s forwards;
+}
+@keyframes rift {
+	60% { transform: scaleY(1); opacity: 1; }
+	100% { transform: scaleY(1) scaleX(6); opacity: 0; }
+}
+
+.intro-stage {
+	position: relative;
+	z-index: 1;
+	width: min(32rem, 100%);
+	animation: stage-out 0.25s ease-in 1.45s forwards;
+}
+@keyframes stage-out {
+	to { opacity: 0; transform: scale(1.06); filter: brightness(2.2) blur(4px); }
+}
+.intro-window {
+	padding: 1.25rem 1.5rem 1.5rem;
+}
+.intro-line {
+	margin: 0 0 0.6rem;
+	font-family: var(--font-display);
+	font-size: clamp(1rem, 3.6vw, 1.2rem);
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	color: var(--text-primary);
+	/* Typed-on reveal, left to right. */
+	clip-path: inset(0 100% 0 0);
+	animation: type-on 0.4s steps(24, end) forwards;
+}
+.intro-line b {
+	color: var(--accent);
+	text-shadow: var(--text-glow);
+}
+.l1 { animation-delay: 0.35s; }
+.l2 {
+	color: var(--text-secondary);
+	animation-duration: 0.2s;
+	animation-delay: 0.7s;
+}
+@keyframes type-on {
+	to { clip-path: inset(0 -1rem 0 0); }
+}
+/* 0 -> 100 counted by an animated registered integer. */
+.intro-pct {
+	color: var(--monarch);
+	animation: pct 0.65s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
+	counter-reset: pct var(--pct);
+}
+.intro-pct::after {
+	content: counter(pct) '%';
+}
+@keyframes pct {
+	to { --pct: 100; }
+}
+.intro-bar {
+	display: block;
+	height: 3px;
+	margin-top: 0.4rem;
+	background: rgba(76, 201, 255, 0.12);
+}
+.intro-bar::before {
+	content: '';
+	display: block;
+	width: 0;
+	height: 100%;
+	background: linear-gradient(90deg, var(--accent), var(--monarch));
+	box-shadow: 0 0 10px var(--accent);
+	animation: intro-fill 0.65s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
+}
+@keyframes intro-fill {
+	to { width: 100%; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+	.hunter-intro,
 	html::after,
 	.sys-toast,
 	.glitch::before,

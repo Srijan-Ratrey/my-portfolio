@@ -12,10 +12,14 @@ stack:
 links:
   - label: live demo
     href: https://multilabel-content-classification.streamlit.app/
+    primary: true
   - label: Write-up
     href: /blog/multi-label-content-classification/
+    primary: false
   - label: Repo
     href: https://github.com/Srijan-Ratrey/Multilabel-content-classification
+    primary: false
   - label: Model
     href: https://huggingface.co/srijanratrey/distilbert-jigsaw-multilabel
+    primary: false
 ---

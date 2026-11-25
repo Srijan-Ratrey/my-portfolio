@@ -1,26 +1,20 @@
 ---
-heading: 'Srijan Ratrey'
-lede: >-
-  I build and evaluate ML systems — content safety classifiers, retrieval pipelines, and the
-  measurement harnesses that tell you whether any of it actually works.
-# Only real, verifiable figures belong here. Set accent: true on the one number
-# you want highlighted — at most one per page.
+heading: Srijan Ratrey
+lede: 'ML engineer. I build and evaluate ML systems, and report where they fail. Previously AI/ML at Kavana: content safety, LLM evaluation, speech-to-text.'
 metrics:
-  - label: 'Macro-F1'
-    value: '0.684'
-  - label: 'Accuracy trap'
-    value: '89.83%'
+  - label: content-safety catch rate in production (Kavana)
+    value: 66% → 77%
     accent: true
-  - label: 'N test'
-    value: '23,936'
-ctaLabel: "See what I've built →"
-ctaHref: '/projects'
-writingHeading: 'Writing'
-allPostsLabel: 'All posts →'
+  - label: saved per 10,000 fraud decisions by optimising cost, not F1 (illustrative)
+    value: ₹112,750
+    accent: false
+  - label: water IoU on 12 held-out Bengaluru lakes, with error ranges
+    value: '0.78'
+    accent: false
+ctaLabel: See what I've built →
+ctaHref: /projects
+writingHeading: Writing
+allPostsLabel: All posts →
 ---
 
-Most of what I find interesting sits in the gap between a model that scores well and a model
-that is useful. A classifier that predicts nothing at all can post 89.8% accuracy; a retrieval
-system can return confident citations for the wrong document. So the work I care about is
-choosing the metric, calibrating the operating point, and being specific about where a system
-fails.
+At Kavana I took a content-safety classifier from 66% to 77% catch rate, built an LLM-as-judge pipeline (87% precision, 1,000 conversations in under 15 minutes), and shipped speech-to-text under 1.5s end-to-end. More on the About page →
